@@ -1,16 +1,3 @@
-resource "kubernetes_namespace" "example" {
-  metadata {
-    name = "${var.namespace_name}"
-    labels {
-      name = "DOTS-label"
-    }
-    annotations {
-      name = "DOTS-annotation"
-    }
-  }
-}
-
-
 resource "null_resource" "init_helm" {
   provisioner "local-exec" {
     command = "helm init --wait && helm repo update"
@@ -36,10 +23,10 @@ resource "null_resource" "provision_jenkins" {
   count      = var.install_jenkins ? 1 : 0
   provisioner "local-exec" {
     command = <<EOT
-      kubectl create -f helm/jenkins-namespace.yaml
-      kubectl create -f helm/jenkins-volume.yaml
+      kubectl create -f jenkins-namespace.yaml
+      kubectl create -f jenkins-volume.yaml
       scripts/tiller_wait.sh
-      helm install stable/jenkins -f helm/jenkins-values.yaml -f helm/jenkins-jobs.yaml --name jenkins-master --namespace jenkins-project
+      helm install stable/jenkins -f jenkins-values.yaml -f jenkins-jobs.yaml --name jenkins-master --namespace jenkins-project
     
 EOT
 
