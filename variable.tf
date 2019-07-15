@@ -1,4 +1,9 @@
 variable "namespace_name" {
-  default = "demo-service"
+  default = "DOTS-service"
+  type    = "string"
+}
+
+variable "cluster_name" {
+  default = "DOTS_cluster"
   type    = "string"
 }
