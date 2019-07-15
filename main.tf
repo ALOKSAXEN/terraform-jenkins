@@ -9,3 +9,39 @@ resource "kubernetes_namespace" "example" {
     }
   }
 }
+
+
+resource "null_resource" "init_helm" {
+  provisioner "local-exec" {
+    command = "helm init --wait && helm repo update"
+  }
+}
+
+resource "null_resource" "authorize_helm" {
+  depends_on = [null_resource.init_helm]
+  provisioner "local-exec" {
+    command = <<EOT
+      kubectl create serviceaccount --namespace kube-system tiller
+      kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+      kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+    
+EOT
+
+}
+}
+
+
+resource "null_resource" "provision_jenkins" {
+  depends_on = [null_resource.authorize_helm]
+  count      = var.install_jenkins ? 1 : 0
+  provisioner "local-exec" {
+    command = <<EOT
+      kubectl create -f helm/jenkins-namespace.yaml
+      kubectl create -f helm/jenkins-volume.yaml
+      scripts/tiller_wait.sh
+      helm install stable/jenkins -f helm/jenkins-values.yaml -f helm/jenkins-jobs.yaml --name jenkins-master --namespace jenkins-project
+    
+EOT
+
+  }
+}
