@@ -15,3 +15,17 @@ EOT
 
 }
 }
+
+resource "null_resource" "provision_jenkins" {
+  count      = var.install_jenkins ? 1 : 0
+  provisioner "local-exec" {
+    command = <<EOT
+      kubectl create -f jenkins-namespace.yaml
+      kubectl create -f jenkins-volume.yaml
+      scripts/tiller_wait.sh
+      helm install stable/jenkins -f jenkins-values.yaml -f jenkins-jobs.yaml --name jenkins-master --namespace jenkins-project
+    
+EOT
+
+  }
+}
