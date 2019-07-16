@@ -21,7 +21,7 @@ resource "null_resource" "provision_jenkins" {
     command = <<EOT
       kubectl create -f jenkins-namespace.yaml
       kubectl create -f jenkins-volume.yaml
-      scripts/tiller_wait.sh
+      tiller_wait.sh
       helm install stable/jenkins -f jenkins-values.yaml -f jenkins-jobs.yaml --name jenkins-master --namespace jenkins-project
     
 EOT
