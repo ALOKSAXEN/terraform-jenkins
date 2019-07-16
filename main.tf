@@ -17,8 +17,7 @@ EOT
 }
 
 resource "null_resource" "provision_jenkins" {
-  count      = var.install_jenkins ? 1 : 0
-  provisioner "local-exec" {
+    provisioner "local-exec" {
     command = <<EOT
       kubectl create -f jenkins-namespace.yaml
       kubectl create -f jenkins-volume.yaml
