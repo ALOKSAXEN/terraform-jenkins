@@ -28,7 +28,8 @@ resource "null_resource" "provision_jenkins" {
       kubectl create -f jenkins-volume.yaml
       sh tiller_wait.sh
       helm install stable/jenkins --name jenkins-master --namespace jenkins-project
-    
+      helm ls
+      kubectl get pods --all-namespaces
 EOT
 
   }
