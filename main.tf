@@ -12,7 +12,7 @@ resource "null_resource" "authorize_helm" {
       kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
       kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
       export HELM_HOST=":44134"
-      tiller -listen ${HELM_HOST} -alsologtostderr >/dev/null 2>&1 &
+      tiller -listen $${HELM_HOST} -alsologtostderr >/dev/null 2>&1 &
       helm init --upgrade
       helm ls
  
